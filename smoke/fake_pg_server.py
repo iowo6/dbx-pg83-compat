@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Minimal fake PostgreSQL server for smoke-testing the pg83 driver."""
 import hashlib
+import os
 import socket
 import struct
 import sys
@@ -218,7 +219,10 @@ def serve(conn, log):
         log.append(("server_error", traceback.format_exc()))
     finally:
         conn.close()
-        with open("smoke_server.log", "a", encoding="utf-8") as sink:
+        # Log beside this script regardless of the caller's cwd, so the smoke
+        # suite (and CI, which may run from the repo root) can always find it.
+        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "smoke_server.log")
+        with open(log_path, "a", encoding="utf-8") as sink:
             for entry in log:
                 sink.write(repr(entry) + "\n")
 
