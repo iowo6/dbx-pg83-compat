@@ -19,8 +19,32 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-EXE = os.path.join(ROOT, "dist", "dbx-pg83-compat", "bin", "dbx-pg83-driver.bat")
-DRIVER_CMD = ["cmd", "/c", EXE]
+
+
+def resolve_driver_command():
+    """Pick the launcher to drive, mirroring DBX's own load path.
+
+    Windows: the dist .bat launcher (what resolve_existing_backend_path picks).
+    Unix: the release binary directly, or the dist copy when one exists.
+    """
+    if os.name == "nt":
+        bat = os.path.join(ROOT, "dist", "dbx-pg83-compat", "bin", "dbx-pg83-driver.bat")
+        if os.path.isfile(bat):
+            return ["cmd", "/c", bat]
+        exe = os.path.join(ROOT, "target", "release", "dbx-pg83-driver.exe")
+        if os.path.isfile(exe):
+            return [exe]
+        raise RuntimeError("no driver binary found: run 'cargo build --release' first")
+    for candidate in (
+        os.path.join(ROOT, "dist", "dbx-pg83-compat", "bin", "dbx-pg83-driver"),
+        os.path.join(ROOT, "target", "release", "dbx-pg83-driver"),
+    ):
+        if os.path.isfile(candidate):
+            return [candidate]
+    raise RuntimeError("no driver binary found: run 'cargo build --release' first")
+
+
+DRIVER_CMD = resolve_driver_command()
 
 PORT = 15433
 CONNECTION = {

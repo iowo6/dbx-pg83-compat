@@ -25,21 +25,7 @@ jobs:
       - name: Unit tests
         run: cargo test --release
 
-      - name: Smoke tests (fake PG server)
-        if: matrix.os != 'windows-latest' || true
-        shell: bash
-        run: |
-          # The smoke suite drives target/release binary directly with Python's
-          # subprocess; adjust the launcher path per-OS inside the script.
-          python smoke/smoke.py || {
-            # Windows: smoke.py expects the dist .bat; rebuild that layout first.
-            if [[ "$RUNNER_OS" == "Windows" ]]; then
-              mkdir -p dist/dbx-pg83-compat/bin
-              cp target/release/dbx-pg83-driver.exe dist/dbx-pg83-compat/bin/
-              cp manifest.json dist/dbx-pg83-compat/manifest.json
-              printf '@echo off\r\nsetlocal\r\nset "HERE=%%~dp0"\r\n"%%HERE%%dbx-pg83-driver.exe" %%*\r\nendlocal\r\n' > dist/dbx-pg83-compat/bin/dbx-pg83-driver.bat
-              python smoke/smoke.py
-            else
-              exit 1
-            fi
-          }
+      # smoke.py resolves the launcher per-OS itself: the dist .bat on
+      # Windows, the release binary directly on Linux/macOS.
+      - name: Smoke tests (fake PG 8.3 server)
+        run: python smoke/smoke.py
