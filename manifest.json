@@ -1,0 +1,16 @@
+{
+  "id": "dbx-pg83-compat",
+  "name": "PostgreSQL 老版本兼容驱动",
+  "version": "0.1.2",
+  "protocol_version": 1,
+  "description": "让 DBX 正常使用 PostgreSQL 8.3~9.0 老版本服务器的纯 Rust 驱动插件：直接讲 PostgreSQL 3.0 线协议（无需 Java/JDBC 驱动包），自动把 9.1+ 的 left()/right() 等 SQL 改写为老版本可执行的等价形式，元数据查询全部使用 8.3 时代的目录表。使用方法：在 DBX 中新建 JDBC 类型连接，URL 填 jdbc:postgresql://主机:5432/库名。",
+  "executable": "bin/dbx-pg83-driver",
+  "drivers": [
+    {
+      "id": "jdbc",
+      "label": "JDBC（PostgreSQL 老版本）",
+      "kind": "external",
+      "database_type": "jdbc"
+    }
+  ]
+}

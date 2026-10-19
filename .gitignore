@@ -1,0 +1,5 @@
+target/
+dist/
+smoke/smoke_server.log
+smoke/smoke_installed.py
+*.db

@@ -1,0 +1,23 @@
+[package]
+name = "dbx-pg83-driver"
+version = "0.1.2"
+edition = "2021"
+description = "DBX external driver plugin: legacy PostgreSQL (8.3+) compatibility backend"
+license = "Apache-2.0"
+
+# Standalone plugin project: deliberately outside the DBX workspace.
+[workspace]
+
+[[bin]]
+name = "dbx-pg83-driver"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"
